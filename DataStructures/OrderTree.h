@@ -4,16 +4,18 @@
 
 #ifndef ORDERBOOK_ORDERTREE_H
 #define ORDERBOOK_ORDERTREE_H
+#include "OrderList.h"
 #include "../Order.h"
-#include "../OrdList.h"
 
 
 class OrderTree {
     public:
-    OrderTree(OrdList ordList);
+    OrderTree(Order* ord);
+    void addOrder(Order* ord);
     OrderTree* left;
     OrderTree* right;
-    Order ordList;
+    OrderList* ordList;
+
 };
 
 

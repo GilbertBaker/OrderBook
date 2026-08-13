@@ -7,6 +7,12 @@
 
 
 class Order {
+public:
+    Order(int p, int q, int t, int traderID);
+    const int price;
+    const int time;
+    const int id;
+    int quantity;
 };
 
 
