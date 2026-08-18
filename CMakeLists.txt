@@ -12,4 +12,10 @@ add_executable(OrderBook main.cpp
         DataStructures/OrdListNode.h
         DataStructures/OrdListNode.h
         DataStructures/OrderList.cpp
-        DataStructures/OrderList.h)
+        DataStructures/OrderList.h
+        DataStructures/OrderBook.cpp
+        DataStructures/OrderBook.h
+        Traders/Trader.cpp
+        Traders/Trader.h
+        Traders/TraderAlgo.cpp
+        Traders/TraderAlgo.h)

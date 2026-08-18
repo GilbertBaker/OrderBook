@@ -32,5 +32,52 @@ void OrderTree::addOrder(Order* ord) {
     }
 }
 
+Order* OrderTree::getLowestOrder() {
+    if (left != nullptr) {
+        Order* lo = left->getLowestOrder();
+        //return lowest order in this tree val if one below is empty.
+        return (lo==nullptr ? ordList->getFirstOrder() : lo);
+    }
+
+    return ordList -> getFirstOrder();
+}
+
+bool OrderTree::deleteLowestOrder() {
+    if (left != nullptr) {
+        bool v = left->deleteLowestOrder();
+        if (!v) {
+            if (ordList -> getFirstOrder() == nullptr) {return false;}
+            delete ordList->PopOrder();
+            return true;
+        }
+    }
+    if (ordList->getFirstOrder() == nullptr) {return false;}
+    delete ordList->PopOrder();
+    return true;
+}
+
+bool OrderTree::deleteHighestOrder() {
+    if (right != nullptr) {
+        bool v = right->deleteHighestOrder();
+        if (!v) {
+            if (ordList -> getFirstOrder() == nullptr) {return false;}
+            delete ordList->PopOrder();
+            return true;
+        }
+    }
+    if (ordList->getFirstOrder() == nullptr) {return false;}
+    delete ordList->PopOrder();
+    return true;
+}
+
+Order* OrderTree::getHighestOrder() {
+    if (right != nullptr) {
+        Order* lo = right->getHighestOrder();
+        return (lo==nullptr ? ordList->getFirstOrder() : lo);
+    }
+
+    return ordList -> getFirstOrder();
+}
+
 
 

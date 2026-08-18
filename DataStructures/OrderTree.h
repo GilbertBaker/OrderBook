@@ -15,7 +15,10 @@ class OrderTree {
     OrderTree* left;
     OrderTree* right;
     OrderList* ordList;
-
+    Order* getHighestOrder();
+    Order* getLowestOrder();
+    bool deleteLowestOrder();
+    bool deleteHighestOrder();
 };
 
 
