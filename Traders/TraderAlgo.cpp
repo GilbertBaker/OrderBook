@@ -13,7 +13,7 @@
 TraderAlgo::TraderAlgo(OrderBook* ordBook) : orderBook(ordBook) {
     curID=0;
     //for now:
-    noOfTraders=500;
+    noOfTraders=100;
     //TODO: do something about 0, it needs to be set to something that isnt null but isnt a trader
     for (int i=curID;i<noOfTraders;i++) {
         traders[i] = new Trader(i);

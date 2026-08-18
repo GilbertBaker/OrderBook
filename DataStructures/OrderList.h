@@ -15,7 +15,7 @@ class OrderList {
     void deleteFirstOrder();
     Order* getFirstOrder();
     const int price;
-
+    int CalcOrders();
     private:
     OrdListNode* head;
     OrdListNode* tail;

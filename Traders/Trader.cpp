@@ -26,23 +26,23 @@ void Trader::Update() {
 
     int v = dist(gen);
     //2% ish buy chance
-    if (v<=1) {
+    if (v<=2) {
         if (v==0) {
             //market buy
             marketBuy();
         }
-        else if (v==1) {
+        else {
             //limit buy
             limitBuy();
         }
     }
     //2% ishsell chance
-    else if (v<=3) {
-        if (v==2) {
+    else if (v<=4) {
+        if (v==4) {
             //market sell
             marketSell();
         }
-        else if (v==3) {
+        else {
             //limit sell
             limitSell();
         }
@@ -57,32 +57,66 @@ void Trader::marketBuy() {
     algo->orderBook->placeBuyInstantOrder(1000,ID);
 }
 void Trader::limitBuy() {
+    OrderBook* ordBook = algo -> orderBook;
+    int buyPrice = ordBook->getBuyPrice();
+    int sellPrice = ordBook->getSellPrice();
+    if (buyPrice<=0) {buyPrice=sellPrice+20; if (sellPrice <=0) {buyPrice=1000; sellPrice=1000;}}
+    int dif = buyPrice-sellPrice;
+
     std::random_device rd;
     std::mt19937 gen(rd());
 
     // Random integer from 1 to 10 inclusive
-    std::uniform_int_distribution<int> dist(-20, 20);
+    std::uniform_int_distribution<int> dist(sellPrice-20,buyPrice);
 
     int l = dist(gen);
-    OrderBook* ordBook = algo -> orderBook;
-    Order* order = new Order(l+ordBook->getBuyPrice(),1000,algo->getCurrentTime(),ID);
+
+    //work out quantity
+    std::uniform_int_distribution<int> dist2(1, 3000);
+    int q = dist2(gen);
+
+
+    //if no orders default to 1000
+    if (buyPrice<=0) {buyPrice=ordBook->getSellPrice(); if (buyPrice<=0) {buyPrice=1000;}}
+    Order* order = new Order(l+buyPrice,q,algo->getCurrentTime(),ID);
     ordBook->placeBuyOrder(order);
 }
 void Trader::limitSell() {
-    if (qOwned<1000) {return;}
+    if (qOwned<=0) {return;}
+    OrderBook* ordBook = algo -> orderBook;
+    int buyPrice = ordBook->getBuyPrice();
+    int sellPrice = ordBook->getSellPrice();
+    if (buyPrice<=0) {buyPrice=sellPrice+20; if (sellPrice <=0) {buyPrice=1000; sellPrice=1000;}}
     std::random_device rd;
     std::mt19937 gen(rd());
 
     // Random integer from 1 to 10 inclusive
-    std::uniform_int_distribution<int> dist(-20, 20);
+    std::uniform_int_distribution<int> dist(sellPrice, buyPrice+20);
 
     int l = dist(gen);
-    OrderBook* ordBook = algo -> orderBook;
-    Order* order = new Order(l+ordBook->getBuyPrice(),1000,algo->getCurrentTime(),ID);
+
+    //work out quantity
+    std::uniform_int_distribution<int> dist2(1, qOwned);
+    int q = dist2(gen);
+
+
+    //if no orders default to 1000
+    if (buyPrice<=0) {buyPrice=ordBook->getBuyPrice(); if (buyPrice<=0) {buyPrice=1000;}}
+    Order* order = new Order(l+ordBook->getBuyPrice(),q,algo->getCurrentTime(),ID);
     ordBook->placeSellOrder(order);
 
 }
 void Trader::marketSell() {
-    if (qOwned<1000) {return;}
-    algo->orderBook->placeSellInstantOrder(1000,ID);
+    if (qOwned<=0) {return;}
+    std::random_device rd;
+    std::mt19937 gen(rd());
+
+
+
+    //work out quantity
+    std::uniform_int_distribution<int> dist2(1, qOwned);
+    int q = dist2(gen);
+
+    //place
+    algo->orderBook->placeSellInstantOrder(q,ID);
 }

@@ -7,7 +7,7 @@
 #include "../Traders/Trader.h"
 using namespace std::chrono;
 void OrderBook::placeBuyOrder(Order* order) {
-    if (getBuyPrice() < order->price) {
+    if (getBuyPrice() <= order->price) {
         placeBuyInstantOrder(order->quantity, order->id);
     }
     else {
@@ -15,7 +15,7 @@ void OrderBook::placeBuyOrder(Order* order) {
     }
 }
 void OrderBook::placeSellOrder(Order* order) {
-    if (getSellPrice() > order->price) {
+    if (getSellPrice() >= order->price) {
         placeSellInstantOrder(order->quantity, order->id);
     }
     else {
@@ -112,7 +112,21 @@ int OrderBook::getMeanPrice() {
 
 //TODO: make this a better method
 OrderBook::OrderBook() {
-    buyOrders = new OrderTree(new Order(1000,10000000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
-    sellOrders = new OrderTree(new Order(1100,1000000000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
+    buyOrders = new OrderTree(new Order(1000,100,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
+    sellOrders = new OrderTree(new Order(1010,10000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
     algo = nullptr;
+}
+
+void OrderBook::outputOrderBook() {
+    std::cout << "\nSELLS:\n";
+
+    int count = 0;
+    sellOrders->printLowestLevels(count, 3);
+
+    std::cout << "BUYS:\n";
+
+    count = 0;
+    buyOrders->printHighestLevels(count, 3);
+
+    std::cout << '\n';
 }

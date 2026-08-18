@@ -5,6 +5,7 @@
 #ifndef ORDERBOOK_ORDERBOOK_H
 #define ORDERBOOK_ORDERBOOK_H
 #include "OrderTree.h"
+#include <iostream>
 //#include "../Traders/TraderAlgo.h"
 class TraderAlgo;
 
@@ -20,6 +21,7 @@ class OrderBook {
         int getSellPrice();
         int getMeanPrice();
         OrderBook();
+        void outputOrderBook();
 
         //allows for it to be updated later
         TraderAlgo* algo;

@@ -13,6 +13,7 @@ int main() {
     while (true) {
         tAlgo.Update();
         std::cout << tAlgo.orderBook->getMeanPrice() << '\n';
+        orderBook.outputOrderBook();
         count++;
         if (count > 100000) {
             return 0;
@@ -20,3 +21,4 @@ int main() {
     }
     return 0;
 }
+

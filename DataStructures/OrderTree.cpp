@@ -3,7 +3,7 @@
 //
 
 #include "OrderTree.h"
-
+#include <iostream>
 OrderTree::OrderTree(Order* order) {
     ordList = new OrderList(order->price);
     ordList->PushOrder(order);
@@ -81,6 +81,44 @@ Order* OrderTree::getHighestOrder() {
     }
 
     return ordList -> getFirstOrder();
+}
+
+void OrderTree::printLowestLevels(int& printed, int maxLevels) {
+    if (printed >= maxLevels) return;
+
+    if (left != nullptr)
+        left->printLowestLevels(printed, maxLevels);
+
+    if (printed >= maxLevels) return;
+
+    int quantity = ordList->CalcOrders();
+
+    if (quantity > 0) {
+        std::cout << ordList->price << " x " << quantity << '\n';
+        printed++;
+    }
+
+    if (right != nullptr)
+        right->printLowestLevels(printed, maxLevels);
+}
+
+void OrderTree::printHighestLevels(int& printed, int maxLevels) {
+    if (printed >= maxLevels) return;
+
+    if (right != nullptr)
+        right->printHighestLevels(printed, maxLevels);
+
+    if (printed >= maxLevels) return;
+
+    int quantity = ordList->CalcOrders();
+
+    if (quantity > 0) {
+        std::cout << ordList->price << " x " << quantity << '\n';
+        printed++;
+    }
+
+    if (left != nullptr)
+        left->printHighestLevels(printed, maxLevels);
 }
 
 

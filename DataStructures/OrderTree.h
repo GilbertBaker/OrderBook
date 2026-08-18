@@ -19,7 +19,10 @@ class OrderTree {
     Order* getLowestOrder();
     bool deleteLowestOrder();
     bool deleteHighestOrder();
+    void printLowestLevels(int& printed, int maxLevels);
+    void printHighestLevels(int& printed, int maxLevels);
 };
+
 
 
 #endif //ORDERBOOK_ORDERTREE_H

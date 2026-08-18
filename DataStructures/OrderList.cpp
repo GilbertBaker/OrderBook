@@ -7,6 +7,7 @@
 OrderList::OrderList(int p) : price(p) {
     head=nullptr;
     tail=nullptr;
+
 }
 
 //Removes first order from list and returns it.
@@ -58,6 +59,19 @@ void OrderList::PushOrder(Order* ord) {
         tail = tail->next;
     }
 
+}
+
+int OrderList::CalcOrders() {
+    if (head==nullptr) {
+        return 0;
+    }
+    OrdListNode* temp = head;
+    int tot = 0;
+    while (temp!=nullptr) {
+        tot += temp->order->quantity;
+        temp = temp->next;
+    }
+    return tot;
 }
 
 
