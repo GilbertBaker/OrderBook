@@ -7,6 +7,8 @@
 OrderTree::OrderTree(Order* order) {
     ordList = new OrderList(order->price);
     ordList->PushOrder(order);
+    left = nullptr;
+    right = nullptr;
 }
 
 void OrderTree::addOrder(Order* ord) {
@@ -50,6 +52,7 @@ bool OrderTree::deleteLowestOrder() {
             delete ordList->PopOrder();
             return true;
         }
+        return true;
     }
     if (ordList->getFirstOrder() == nullptr) {return false;}
     delete ordList->PopOrder();
@@ -64,6 +67,7 @@ bool OrderTree::deleteHighestOrder() {
             delete ordList->PopOrder();
             return true;
         }
+        return true;
     }
     if (ordList->getFirstOrder() == nullptr) {return false;}
     delete ordList->PopOrder();

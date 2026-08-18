@@ -5,8 +5,8 @@
 #ifndef ORDERBOOK_ORDERBOOK_H
 #define ORDERBOOK_ORDERBOOK_H
 #include "OrderTree.h"
-#include "../Traders/TraderAlgo.h"
-
+//#include "../Traders/TraderAlgo.h"
+class TraderAlgo;
 
 class OrderBook {
     public:

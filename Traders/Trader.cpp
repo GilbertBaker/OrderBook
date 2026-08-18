@@ -3,7 +3,10 @@
 //
 
 #include "Trader.h"
-#include "random"
+#include "TraderAlgo.h"
+#include "../DataStructures/OrderBook.h"
+#include "../Order.h"
+#include <random>
 Trader::Trader(int id) : ID(id) {
     money= 100000;
     qOwned = 0;

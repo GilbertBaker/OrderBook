@@ -3,6 +3,8 @@
 //
 #include <chrono>
 #include "OrderBook.h"
+#include "../Traders/TraderAlgo.h"
+#include "../Traders/Trader.h"
 using namespace std::chrono;
 void OrderBook::placeBuyOrder(Order* order) {
     if (getBuyPrice() < order->price) {
@@ -25,13 +27,13 @@ void OrderBook::placeBuyInstantOrder(int quantity, int traderID) {
     int q = quantity;
     while (q>0) {
         Order* matchedOrd = sellOrders->getLowestOrder();
-
+        if (matchedOrd==nullptr) {return;}
         //update money
         int p = matchedOrd->price;
         Trader* seller = algo->getTrader(matchedOrd->id);
         Trader* buyer = algo->getTrader(traderID);
 
-        if (matchedOrd->quantity < quantity) {
+        if (matchedOrd->quantity < q) {
             //switch assets arround
             buyer->money -= matchedOrd->quantity*p;
             seller->money += matchedOrd->quantity*p;
@@ -61,13 +63,14 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
     int q = quantity;
     while (q>0) {
         Order* matchedOrd = buyOrders->getHighestOrder();
+        if (matchedOrd==nullptr) {return;}
 
         //update money
         int p = matchedOrd->price;
         Trader* buyer = algo->getTrader(matchedOrd->id);
         Trader* seller = algo->getTrader(traderID);
 
-        if (matchedOrd->quantity < quantity) {
+        if (matchedOrd->quantity < q) {
             //switch assets arround
             buyer->money -= matchedOrd->quantity*p;
             seller->money += matchedOrd->quantity*p;
@@ -95,10 +98,12 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
 }
 
 int OrderBook::getBuyPrice() {
+    if (sellOrders->getLowestOrder()==nullptr) {return -1;}
     return sellOrders->getLowestOrder()->price;
 
 }
 int OrderBook::getSellPrice() {
+    if (buyOrders->getHighestOrder()==nullptr) {return -1;}
     return buyOrders->getHighestOrder()->price;
 }
 int OrderBook::getMeanPrice() {
@@ -107,7 +112,7 @@ int OrderBook::getMeanPrice() {
 
 //TODO: make this a better method
 OrderBook::OrderBook() {
-    buyOrders = new OrderTree(new Order(1000,1000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),-1));
-    sellOrders = new OrderTree(new Order(1100,100000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),-1));
+    buyOrders = new OrderTree(new Order(1000,10000000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
+    sellOrders = new OrderTree(new Order(1100,1000000000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
     algo = nullptr;
 }

@@ -6,8 +6,11 @@
 #define ORDERBOOK_TRADERALGO_H
 #include <unordered_map>
 
-#include "Trader.h"
-#include "../DataStructures/OrderBook.h"
+//#include "Trader.h"
+//#include "../DataStructures/OrderBook.h"
+class Trader;
+class OrderBook;
+
 class TraderAlgo {
     public:
     TraderAlgo(OrderBook* ordBook);

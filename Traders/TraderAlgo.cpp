@@ -3,7 +3,7 @@
 //
 
 #include "TraderAlgo.h"
-
+#include "Trader.h"
 #include <chrono>
 #include <memory>
 #include <unordered_map>
@@ -11,9 +11,10 @@
 
 
 TraderAlgo::TraderAlgo(OrderBook* ordBook) : orderBook(ordBook) {
-    curID=1;
+    curID=0;
     //for now:
     noOfTraders=500;
+    //TODO: do something about 0, it needs to be set to something that isnt null but isnt a trader
     for (int i=curID;i<noOfTraders;i++) {
         traders[i] = new Trader(i);
         traders[i] ->algo = this;

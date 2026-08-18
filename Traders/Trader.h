@@ -4,7 +4,7 @@
 
 #ifndef ORDERBOOK_TRADER_H
 #define ORDERBOOK_TRADER_H
-#include "TraderAlgo.h"
+class TraderAlgo;
 
 
 class Trader {
