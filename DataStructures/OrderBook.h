@@ -17,8 +17,8 @@ class OrderBook {
         void placeBuyInstantOrder(int quantity, int traderID);
         void placeSellInstantOrder(int quantity, int traderID);
 
-        int getBuyPrice();
-        int getSellPrice();
+        int getBestAsk();
+        int getBestBid();
         int getMeanPrice();
         OrderBook();
         void outputOrderBook();

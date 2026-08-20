@@ -36,51 +36,84 @@ void OrderTree::addOrder(Order* ord) {
 
 Order* OrderTree::getLowestOrder() {
     if (left != nullptr) {
-        Order* lo = left->getLowestOrder();
-        //return lowest order in this tree val if one below is empty.
-        return (lo==nullptr ? ordList->getFirstOrder() : lo);
-    }
+        Order* order = left->getLowestOrder();
 
-    return ordList -> getFirstOrder();
-}
-
-bool OrderTree::deleteLowestOrder() {
-    if (left != nullptr) {
-        bool v = left->deleteLowestOrder();
-        if (!v) {
-            if (ordList -> getFirstOrder() == nullptr) {return false;}
-            delete ordList->PopOrder();
-            return true;
+        if (order != nullptr) {
+            return order;
         }
-        return true;
     }
-    if (ordList->getFirstOrder() == nullptr) {return false;}
-    delete ordList->PopOrder();
-    return true;
-}
 
-bool OrderTree::deleteHighestOrder() {
+    Order* currentOrder = ordList->getFirstOrder();
+
+    if (currentOrder != nullptr) {
+        return currentOrder;
+    }
+
     if (right != nullptr) {
-        bool v = right->deleteHighestOrder();
-        if (!v) {
-            if (ordList -> getFirstOrder() == nullptr) {return false;}
-            delete ordList->PopOrder();
-            return true;
-        }
-        return true;
+        return right->getLowestOrder();
     }
-    if (ordList->getFirstOrder() == nullptr) {return false;}
-    delete ordList->PopOrder();
-    return true;
+
+    return nullptr;
 }
 
 Order* OrderTree::getHighestOrder() {
     if (right != nullptr) {
-        Order* lo = right->getHighestOrder();
-        return (lo==nullptr ? ordList->getFirstOrder() : lo);
+        Order* order = right->getHighestOrder();
+
+        if (order != nullptr) {
+            return order;
+        }
     }
 
-    return ordList -> getFirstOrder();
+    Order* currentOrder = ordList->getFirstOrder();
+
+    if (currentOrder != nullptr) {
+        return currentOrder;
+    }
+
+    if (left != nullptr) {
+        return left->getHighestOrder();
+    }
+
+    return nullptr;
+}
+
+bool OrderTree::deleteLowestOrder() {
+    if (left != nullptr) {
+        if (left->deleteLowestOrder()) {
+            return true;
+        }
+    }
+
+    if (ordList->getFirstOrder() != nullptr) {
+        delete ordList->PopOrder();
+        return true;
+    }
+
+    if (right != nullptr) {
+        return right->deleteLowestOrder();
+    }
+
+    return false;
+}
+
+bool OrderTree::deleteHighestOrder() {
+    if (right != nullptr) {
+        if (right->deleteHighestOrder()) {
+            return true;
+        }
+    }
+
+    if (ordList->getFirstOrder() != nullptr) {
+        delete ordList->PopOrder();
+        return true;
+    }
+
+    if (left != nullptr) {
+        return left->deleteHighestOrder();
+    }
+
+    return false;
 }
 
 void OrderTree::printLowestLevels(int& printed, int maxLevels) {
