@@ -11,6 +11,7 @@
 class OrderTree {
     public:
     OrderTree(Order* ord);
+    OrderTree();
     void addOrder(Order* ord);
     OrderTree* left;
     OrderTree* right;

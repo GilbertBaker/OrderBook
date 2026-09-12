@@ -18,6 +18,7 @@ TraderAlgo::TraderAlgo(OrderBook* ordBook) : orderBook(ordBook) {
     for (int i=curID;i<noOfTraders;i++) {
         traders[i] = new Trader(i);
         traders[i] ->algo = this;
+        traders[i] -> qOwned = 1000;
         curID+=1;
     }
 }

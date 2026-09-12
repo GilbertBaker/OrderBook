@@ -11,7 +11,18 @@ OrderTree::OrderTree(Order* order) {
     right = nullptr;
 }
 
+OrderTree::OrderTree() {
+    ordList = nullptr;
+    left = nullptr;
+    right = nullptr;
+}
+
 void OrderTree::addOrder(Order* ord) {
+    if (ordList == nullptr) {
+        ordList = new OrderList(ord->price);
+        ordList->PushOrder(ord);
+        return;
+    }
     int p = ord->price;
     if (p < ordList->price) {
         if (left != nullptr) {
@@ -43,7 +54,10 @@ Order* OrderTree::getLowestOrder() {
         }
     }
 
-    Order* currentOrder = ordList->getFirstOrder();
+    Order* currentOrder = nullptr;
+    if (ordList != nullptr) {
+        currentOrder = ordList->getFirstOrder();
+    }
 
     if (currentOrder != nullptr) {
         return currentOrder;
@@ -65,7 +79,10 @@ Order* OrderTree::getHighestOrder() {
         }
     }
 
-    Order* currentOrder = ordList->getFirstOrder();
+    Order* currentOrder = nullptr;
+    if (ordList != nullptr) {
+        currentOrder = ordList->getFirstOrder();
+    }
 
     if (currentOrder != nullptr) {
         return currentOrder;
@@ -85,7 +102,7 @@ bool OrderTree::deleteLowestOrder() {
         }
     }
 
-    if (ordList->getFirstOrder() != nullptr) {
+    if (ordList != nullptr && ordList->getFirstOrder() != nullptr) {
         delete ordList->PopOrder();
         return true;
     }
@@ -104,7 +121,7 @@ bool OrderTree::deleteHighestOrder() {
         }
     }
 
-    if (ordList->getFirstOrder() != nullptr) {
+    if (ordList != nullptr && ordList->getFirstOrder() != nullptr) {
         delete ordList->PopOrder();
         return true;
     }
@@ -124,11 +141,13 @@ void OrderTree::printLowestLevels(int& printed, int maxLevels) {
 
     if (printed >= maxLevels) return;
 
-    int quantity = ordList->CalcOrders();
+    if (ordList !=nullptr) {
+        int quantity = ordList->CalcOrders();
 
-    if (quantity > 0) {
-        std::cout << ordList->price << " x " << quantity << '\n';
-        printed++;
+        if (quantity > 0) {
+            std::cout << ordList->price << " x " << quantity << '\n';
+            printed++;
+        }
     }
 
     if (right != nullptr)
@@ -143,11 +162,13 @@ void OrderTree::printHighestLevels(int& printed, int maxLevels) {
 
     if (printed >= maxLevels) return;
 
-    int quantity = ordList->CalcOrders();
+    if (ordList !=nullptr) {
+        int quantity = ordList->CalcOrders();
 
-    if (quantity > 0) {
-        std::cout << ordList->price << " x " << quantity << '\n';
-        printed++;
+        if (quantity > 0) {
+            std::cout << ordList->price << " x " << quantity << '\n';
+            printed++;
+        }
     }
 
     if (left != nullptr)

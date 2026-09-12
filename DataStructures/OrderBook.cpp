@@ -195,8 +195,8 @@ int OrderBook::getMeanPrice() {
 
 //TODO: make this a better method
 OrderBook::OrderBook() {
-    buyOrders = new OrderTree(new Order(1000,100,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
-    sellOrders = new OrderTree(new Order(1010,10000,(int) duration_cast<std::chrono::milliseconds>(system_clock::now().time_since_epoch()).count(),0));
+    buyOrders = new OrderTree();
+    sellOrders = new OrderTree();
     algo = nullptr;
 }
 
