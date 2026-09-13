@@ -10,16 +10,16 @@
 
 class OrderTree {
     public:
-    OrderTree(Order* ord);
+    //OrderTree(Order* ord); depreciated
     OrderTree();
-    void addOrder(Order* ord);
+    OrdListNode* addOrder(Order* ord);
     OrderTree* left;
     OrderTree* right;
     OrderList* ordList;
     Order* getHighestOrder();
     Order* getLowestOrder();
-    bool deleteLowestOrder();
-    bool deleteHighestOrder();
+    //bool deleteLowestOrder();
+    //bool deleteHighestOrder();
     void printLowestLevels(int& printed, int maxLevels);
     void printHighestLevels(int& printed, int maxLevels);
 };

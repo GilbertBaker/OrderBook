@@ -79,7 +79,7 @@ void Trader::limitBuy() {
     //if no orders default to 1000
     if (buyPrice<=0) {buyPrice=ordBook->getBestBid(); if (buyPrice<=0) {buyPrice=1000;}}
     if (l*q>money) {return;}
-    Order* order = new Order(l,q,algo->getCurrentTime(),ID);
+    Order* order = new Order(l,q,algo->getCurrentTime(),ID,algo->getNextID());
     ordBook->placeBuyOrder(order);
 }
 void Trader::limitSell() {
@@ -103,7 +103,7 @@ void Trader::limitSell() {
 
     //if no orders default to 1000
     if (buyPrice<=0) {buyPrice=ordBook->getBestAsk(); if (buyPrice<=0) {buyPrice=1000;}}
-    Order* order = new Order(l,q,algo->getCurrentTime(),ID);
+    Order* order = new Order(l,q,algo->getCurrentTime(),ID, algo->getNextID());
     ordBook->placeSellOrder(order);
 
 }

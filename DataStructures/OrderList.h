@@ -4,19 +4,19 @@
 
 #ifndef ORDERBOOK_ORDERLIST_H
 #define ORDERBOOK_ORDERLIST_H
-#include "OrdListNode.h"
+class OrdListNode;
 #include "../Order.h"
 
 class OrderList {
     public:
     OrderList(int p);
     Order* PopOrder();
-    void PushOrder(Order* ord);
+    OrdListNode* PushOrder(Order* ord);
     void deleteFirstOrder();
     Order* getFirstOrder();
     const int price;
     int CalcOrders();
-    private:
+
     OrdListNode* head;
     OrdListNode* tail;
 

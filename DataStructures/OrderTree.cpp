@@ -4,12 +4,6 @@
 
 #include "OrderTree.h"
 #include <iostream>
-OrderTree::OrderTree(Order* order) {
-    ordList = new OrderList(order->price);
-    ordList->PushOrder(order);
-    left = nullptr;
-    right = nullptr;
-}
 
 OrderTree::OrderTree() {
     ordList = nullptr;
@@ -17,31 +11,33 @@ OrderTree::OrderTree() {
     right = nullptr;
 }
 
-void OrderTree::addOrder(Order* ord) {
+OrdListNode* OrderTree::addOrder(Order* ord) {
     if (ordList == nullptr) {
         ordList = new OrderList(ord->price);
-        ordList->PushOrder(ord);
-        return;
+
+        return ordList->PushOrder(ord);
     }
     int p = ord->price;
     if (p < ordList->price) {
         if (left != nullptr) {
-            left->addOrder(ord);
+            return left->addOrder(ord);
         }
         else {
-            left = new OrderTree(ord);
+            left = new OrderTree();
+            return left->addOrder(ord);
         }
     }
     else if (p > ordList->price) {
         if (right != nullptr) {
-            right->addOrder(ord);
+            return right->addOrder(ord);
         }
         else {
-            right = new OrderTree(ord);
+            right = new OrderTree();
+            return right->addOrder(ord);
         }
     }
     else {
-        ordList->PushOrder(ord);
+        return ordList->PushOrder(ord);
     }
 }
 
@@ -95,7 +91,7 @@ Order* OrderTree::getHighestOrder() {
     return nullptr;
 }
 
-bool OrderTree::deleteLowestOrder() {
+/*bool OrderTree::deleteLowestOrder() {
     if (left != nullptr) {
         if (left->deleteLowestOrder()) {
             return true;
@@ -112,9 +108,9 @@ bool OrderTree::deleteLowestOrder() {
     }
 
     return false;
-}
+}*/
 
-bool OrderTree::deleteHighestOrder() {
+/*bool OrderTree::deleteHighestOrder() {
     if (right != nullptr) {
         if (right->deleteHighestOrder()) {
             return true;
@@ -131,7 +127,7 @@ bool OrderTree::deleteHighestOrder() {
     }
 
     return false;
-}
+}*/
 
 void OrderTree::printLowestLevels(int& printed, int maxLevels) {
     if (printed >= maxLevels) return;

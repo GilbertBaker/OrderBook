@@ -19,8 +19,10 @@ class TraderAlgo {
     std::unordered_map<int, Trader*> traders;
     OrderBook* orderBook;
     int getCurrentTime();
+    int getNextID();
     private:
     int curID;
+    int currentTradeID;
     int noOfTraders;
 };
 

@@ -8,11 +8,12 @@
 
 class Order {
 public:
-    Order(int p, int q, int t, int traderID);
+    Order(int p, int q, int t, int traderID, int orderid);
     const int price;
     const int time;
     const int id;
     int quantity;
+    int orderID;
 };
 
 

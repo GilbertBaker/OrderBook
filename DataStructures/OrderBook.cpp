@@ -4,6 +4,8 @@
 #include <chrono>
 #include <algorithm>
 #include "OrderBook.h"
+
+#include "OrdListNode.h"
 #include "../Traders/TraderAlgo.h"
 #include "../Traders/Trader.h"
 using namespace std::chrono;
@@ -42,14 +44,14 @@ void OrderBook::placeBuyOrder(Order* order) {
         matchedOrd->quantity -= fillQuantity;
 
         if (matchedOrd->quantity == 0) {
-            sellOrders->deleteLowestOrder();
+            deleteOrder(matchedOrd->orderID);
         }
     }
 
     // Whatever wasn't immediately filled becomes a resting limit order
     if (q > 0) {
         order->quantity = q;
-        buyOrders->addOrder(order);
+        orders[order->orderID] = buyOrders->addOrder(order);
     }
     else {
         // The entire incoming order was filled, so it isn't stored anywhere
@@ -91,14 +93,14 @@ void OrderBook::placeSellOrder(Order* order) {
         matchedOrd->quantity -= fillQuantity;
 
         if (matchedOrd->quantity == 0) {
-            buyOrders->deleteHighestOrder();
+            deleteOrder(matchedOrd);
         }
     }
 
     // Unfilled portion stays as a limit order
     if (q > 0) {
         order->quantity = q;
-        sellOrders->addOrder(order);
+        orders[order->orderID] = sellOrders->addOrder(order);
     }
     else {
         delete order;
@@ -136,7 +138,7 @@ void OrderBook::placeBuyInstantOrder(int quantity, int traderID) {
 
         // Remove completely filled order
         if (matchedOrd->quantity == 0) {
-            sellOrders->deleteLowestOrder();
+            deleteOrder(matchedOrd->orderID);
         }
     }
 }
@@ -171,9 +173,31 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
 
         // Remove completely filled order
         if (matchedOrd->quantity == 0) {
-            buyOrders->deleteHighestOrder();
+            deleteOrder(matchedOrd->orderID);
         }
     }
+}
+
+
+bool OrderBook::deleteOrder(Order* matchedOrd) {
+    int id = matchedOrd->orderID;
+
+    auto it = orders.find(id);
+    if (it == orders.end())
+        return false;
+
+    delete it->second->order;
+    delete it->second;
+    orders.erase(it);
+
+    return true;
+}
+
+bool OrderBook::deleteOrder(int id) {
+    delete orders[id]->order;
+    delete orders[id];
+    orders.erase(id);
+    return true;
 }
 
 int OrderBook::getBestAsk() {
@@ -189,7 +213,7 @@ int OrderBook::getMeanPrice() {
     int bp = getBestAsk();
     int sp = getBestBid();
     if (bp<0) {bp=sp;}
-    if (sp<0) {sp=0; bp=1000000;}
+    if (sp<0) {sp=0; bp=2;}
     return (bp+sp)/2;
 }
 
@@ -198,6 +222,7 @@ OrderBook::OrderBook() {
     buyOrders = new OrderTree();
     sellOrders = new OrderTree();
     algo = nullptr;
+    orders = std::unordered_map<int, OrdListNode*>();
 }
 
 void OrderBook::outputOrderBook() {
@@ -212,4 +237,12 @@ void OrderBook::outputOrderBook() {
     buyOrders->printHighestLevels(count, 3);
 
     std::cout << '\n';
+}
+
+void OrderBook::cancelOrder(int orderID) {
+    if (!orders.contains(orderID)) {
+        std::cout << "\nInvalid cancel ID error\n";
+    }
+
+    deleteOrder(orderID);
 }

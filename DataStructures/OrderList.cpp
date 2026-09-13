@@ -4,10 +4,11 @@
 
 #include "OrderList.h"
 
+#include "OrdListNode.h"
+
 OrderList::OrderList(int p) : price(p) {
     head=nullptr;
     tail=nullptr;
-
 }
 
 //Removes first order from list and returns it.
@@ -19,6 +20,9 @@ Order* OrderList::PopOrder() {
             tail = nullptr;
         }
         head = temp->next;
+        if (head!=nullptr) {
+            head->prev = nullptr;
+        }
         Order* ord = temp->order;
 
         //delete for mem
@@ -43,20 +47,26 @@ void OrderList::deleteFirstOrder() {
     }
     OrdListNode* temp = head;
     head = head->next;
+    if (head!=nullptr) {
+        head->prev = nullptr;
+    }
     if (tail==temp) {tail=nullptr;}
     delete temp;
 }
 
 //add an order to the back of the list
-void OrderList::PushOrder(Order* ord) {
+OrdListNode* OrderList::PushOrder(Order* ord) {
     if (head==nullptr) {
-        OrdListNode* ordNode = new OrdListNode(ord);
-        head=ordNode;
+        OrdListNode* ordNode = new OrdListNode(ord, this);
+        head = ordNode;
         tail = ordNode;
+        return ordNode;
     }
     else {
-        tail->next = new OrdListNode(ord);
+        tail->next = new OrdListNode(ord, this );
+        tail->next->prev = tail;
         tail = tail->next;
+        return tail;
     }
 
 }

@@ -11,6 +11,7 @@
 
 
 TraderAlgo::TraderAlgo(OrderBook* ordBook) : orderBook(ordBook) {
+    currentTradeID =0;
     curID=0;
     //for now:
     noOfTraders=100;
@@ -21,6 +22,12 @@ TraderAlgo::TraderAlgo(OrderBook* ordBook) : orderBook(ordBook) {
         traders[i] -> qOwned = 1000;
         curID+=1;
     }
+}
+
+int TraderAlgo::getNextID() {
+    int id = currentTradeID;
+    currentTradeID+=1;
+    return id;
 }
 
 void TraderAlgo::Update() {
