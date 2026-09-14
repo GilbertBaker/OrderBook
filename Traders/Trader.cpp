@@ -56,8 +56,12 @@ void Trader::Update() {
 
 void Trader::marketBuy() {
     int bestAsk = algo->orderBook->getBestAsk();
-    int max = (money-reservedMoney)/bestAsk;
-    if (bestAsk <0) {return;}
+
+    if (bestAsk <= 0) {
+        return;
+    }
+
+    int max = (money - reservedMoney) / bestAsk;
     if (max<=1) {return;}
     std::uniform_int_distribution<int> dist2(1, max);
     int q = dist2(algo->rng);

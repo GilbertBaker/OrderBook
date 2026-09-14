@@ -30,6 +30,10 @@ class OrderTree {
     OrderTree* rotateRight();
     OrderTree* rotateLeft();
 
+    //delete price levels
+    OrderTree* removePrice(int price);
+    OrderTree* detachMin(OrderTree*& minNode);
+    OrderTree* rebalance();
 };
 
 

@@ -211,10 +211,36 @@ bool OrderBook::deleteOrder(int id) {
     if (it == orders.end())
         return false;
 
+    ////////////
+    //for deleting node from tree if necessary, keep track of this
+    OrderList* list = it->second->parentList;
+    int price = list->price;
+    bool isBuyOrder = it->second->order->buyOrder;
+    /////////////
+
     std::erase(algo->getTrader(it->second->order->id)->currentOrders, id);
     delete it->second->order;
     delete it->second;
     orders.erase(it);
+
+    //////////////////
+    //back to removing empty list from tree
+    if (list->head == nullptr) {
+        if (isBuyOrder) {
+            buyOrders = buyOrders->removePrice(price);
+
+            if (buyOrders == nullptr) {
+                buyOrders = new OrderTree();
+            }
+        }
+        else {
+            sellOrders = sellOrders->removePrice(price);
+
+            if (sellOrders == nullptr) {
+                sellOrders = new OrderTree();
+            }
+        }
+    }
 
     return true;
 }
@@ -270,7 +296,13 @@ void OrderBook::outputOrderBook() {
 
 void OrderBook::cancelOrder(int orderID) {
     //delete order returns false if any errors, so this works
-    OrdListNode* ordNode = orders[orderID];
+    auto it = orders.find(orderID);
+
+    if (it == orders.end()) {
+        return;
+    }
+
+    OrdListNode* ordNode = it->second;
     if (ordNode == nullptr) {return;}
     Order* order = ordNode->order;
     if (order == nullptr) {return;}
