@@ -11,34 +11,72 @@ OrderTree::OrderTree() {
     right = nullptr;
 }
 
-OrdListNode* OrderTree::addOrder(Order* ord) {
+OrderTree* OrderTree::addOrder(Order* ord, OrdListNode*& insertedNode) {
+    // Empty tree node: initialise its price level and insert the order.
     if (ordList == nullptr) {
         ordList = new OrderList(ord->price);
+        insertedNode = ordList->PushOrder(ord);
+        height = 1;
+        return this;
+    }
 
-        return ordList->PushOrder(ord);
-    }
     int p = ord->price;
+
+    // Insert into left subtree.
     if (p < ordList->price) {
-        if (left != nullptr) {
-            return left->addOrder(ord);
-        }
-        else {
+        if (left == nullptr) {
             left = new OrderTree();
-            return left->addOrder(ord);
         }
+
+        left = left->addOrder(ord, insertedNode);
     }
+
+    // Insert into right subtree.
     else if (p > ordList->price) {
-        if (right != nullptr) {
-            return right->addOrder(ord);
-        }
-        else {
+        if (right == nullptr) {
             right = new OrderTree();
-            return right->addOrder(ord);
         }
+
+        right = right->addOrder(ord, insertedNode);
     }
+
+    // Same price: append to this price level's FIFO list.
     else {
-        return ordList->PushOrder(ord);
+        insertedNode = ordList->PushOrder(ord);
+        return this;
     }
+
+    // Update height after insertion into a subtree.
+    height = 1 + std::max(
+        getHeight(left),
+        getHeight(right)
+    );
+
+    int balance = getHeight(left) - getHeight(right);
+
+    // LL case.
+    if (balance > 1 && p < left->ordList->price) {
+        return rotateRight();
+    }
+
+    // RR case.
+    if (balance < -1 && p > right->ordList->price) {
+        return rotateLeft();
+    }
+
+    // LR case.
+    if (balance > 1 && p > left->ordList->price) {
+        left = left->rotateLeft();
+        return rotateRight();
+    }
+
+    // RL case.
+    if (balance < -1 && p < right->ordList->price) {
+        right = right->rotateRight();
+        return rotateLeft();
+    }
+
+    return this;
 }
 
 Order* OrderTree::getLowestOrder() {
@@ -172,4 +210,45 @@ void OrderTree::printHighestLevels(int& printed, int maxLevels) {
 }
 
 
+int OrderTree::getHeight(OrderTree* node) {
+    if (node == nullptr)
+        return 0;
 
+    return node->height;
+}
+
+int OrderTree::getBalance() {
+    return getHeight(left) - getHeight(right);
+}
+
+void OrderTree::updateHeight() {
+    height = 1 + std::max(
+        getHeight(left),
+        getHeight(right)
+    );
+}
+
+OrderTree* OrderTree::rotateRight() {
+    OrderTree* x = left;
+    OrderTree* B = x->right;
+
+    x->right = this;
+    left = B;
+
+    updateHeight();
+    x->updateHeight();
+
+    return x;
+}
+OrderTree* OrderTree::rotateLeft() {
+    OrderTree* y = right;
+    OrderTree* B = y->left;
+
+    y->left = this;
+    right = B;
+
+    updateHeight();
+    y->updateHeight();
+
+    return y;
+}

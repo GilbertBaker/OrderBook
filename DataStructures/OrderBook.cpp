@@ -51,7 +51,12 @@ void OrderBook::placeBuyOrder(Order* order) {
     // Whatever wasn't immediately filled becomes a resting limit order
     if (q > 0) {
         order->quantity = q;
-        orders[order->orderID] = buyOrders->addOrder(order);
+        OrdListNode* node = nullptr;
+
+        buyOrders = buyOrders->addOrder(order, node);
+
+        orders[order->orderID] = node;
+
         buyer->currentOrders.push_back(order->orderID);
         buyer -> reservedMoney += q*order->price;
     }
@@ -105,7 +110,13 @@ void OrderBook::placeSellOrder(Order* order) {
     if (q > 0) {
         order->quantity = q;
         seller->currentOrders.push_back(order->orderID);
-        orders[order->orderID] = sellOrders->addOrder(order);
+
+        OrdListNode* node = nullptr;
+
+        sellOrders = sellOrders->addOrder(order, node);
+
+        orders[order->orderID] = node;
+
         seller -> reservedQuantity += q;
     }
     else {

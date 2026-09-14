@@ -12,16 +12,24 @@ class OrderTree {
     public:
     //OrderTree(Order* ord); depreciated
     OrderTree();
-    OrdListNode* addOrder(Order* ord);
+    OrderTree* addOrder(Order* ord, OrdListNode*& insertedNode);
     OrderTree* left;
     OrderTree* right;
     OrderList* ordList;
     Order* getHighestOrder();
     Order* getLowestOrder();
+    int height;
     //bool deleteLowestOrder();
     //bool deleteHighestOrder();
     void printLowestLevels(int& printed, int maxLevels);
     void printHighestLevels(int& printed, int maxLevels);
+
+    int getHeight(OrderTree* node);
+    int getBalance();
+    void updateHeight();
+    OrderTree* rotateRight();
+    OrderTree* rotateLeft();
+
 };
 
 
