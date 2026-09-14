@@ -18,4 +18,42 @@ add_executable(OrderBook main.cpp
         Traders/Trader.cpp
         Traders/Trader.h
         Traders/TraderAlgo.cpp
-        Traders/TraderAlgo.h)
+        Traders/TraderAlgo.h
+)
+
+add_executable(OrderBookTests
+        OrderBookTests.cpp
+        Order.cpp
+        Order.h
+        DataStructures/OrderTree.cpp
+        DataStructures/OrderTree.h
+        DataStructures/OrdListNode.cpp
+        DataStructures/OrdListNode.h
+        DataStructures/OrdListNode.h
+        DataStructures/OrderList.cpp
+        DataStructures/OrderList.h
+        DataStructures/OrderBook.cpp
+        DataStructures/OrderBook.h
+        Traders/Trader.cpp
+        Traders/Trader.h
+        Traders/TraderAlgo.cpp
+        Traders/TraderAlgo.h
+)
+
+add_executable(OrderBookBenchmark
+        OrderBookBenchmark.cpp
+        Order.cpp
+        Order.h
+        DataStructures/OrderTree.cpp
+        DataStructures/OrderTree.h
+        DataStructures/OrdListNode.cpp
+        DataStructures/OrdListNode.h
+        DataStructures/OrdListNode.h
+        DataStructures/OrderList.cpp
+        DataStructures/OrderList.h
+        DataStructures/OrderBook.cpp
+        DataStructures/OrderBook.h
+        Traders/Trader.cpp
+        Traders/Trader.h
+        Traders/TraderAlgo.cpp
+)

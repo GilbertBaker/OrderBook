@@ -260,7 +260,9 @@ void OrderBook::outputOrderBook() {
 void OrderBook::cancelOrder(int orderID) {
     //delete order returns false if any errors, so this works
     OrdListNode* ordNode = orders[orderID];
+    if (ordNode == nullptr) {return;}
     Order* order = ordNode->order;
+    if (order == nullptr) {return;}
 
     Trader* trader = algo->getTrader(order->id);
     if (order->buyOrder) {
