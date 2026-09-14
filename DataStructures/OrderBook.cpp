@@ -179,10 +179,16 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
 }
 
 
+//for simplicity
 bool OrderBook::deleteOrder(Order* matchedOrd) {
     int id = matchedOrd->orderID;
 
+    return deleteOrder(id);
+}
+
+bool OrderBook::deleteOrder(int id) {
     auto it = orders.find(id);
+
     if (it == orders.end())
         return false;
 
@@ -190,13 +196,6 @@ bool OrderBook::deleteOrder(Order* matchedOrd) {
     delete it->second;
     orders.erase(it);
 
-    return true;
-}
-
-bool OrderBook::deleteOrder(int id) {
-    delete orders[id]->order;
-    delete orders[id];
-    orders.erase(id);
     return true;
 }
 
@@ -210,11 +209,19 @@ int OrderBook::getBestBid() {
     return buyOrders->getHighestOrder()->price;
 }
 int OrderBook::getMeanPrice() {
-    int bp = getBestAsk();
-    int sp = getBestBid();
-    if (bp<0) {bp=sp;}
-    if (sp<0) {sp=0; bp=2;}
-    return (bp+sp)/2;
+    int ask = getBestAsk();
+    int bid = getBestBid();
+
+    if (ask < 0 && bid < 0)
+        return -1;
+
+    if (ask < 0)
+        return bid;
+
+    if (bid < 0)
+        return ask;
+
+    return (ask + bid) / 2;
 }
 
 //TODO: make this a better method
@@ -240,9 +247,8 @@ void OrderBook::outputOrderBook() {
 }
 
 void OrderBook::cancelOrder(int orderID) {
-    if (!orders.contains(orderID)) {
+    //delete order returns false if any errors, so this works
+    if (!deleteOrder(orderID)) {
         std::cout << "\nInvalid cancel ID error\n";
     }
-
-    deleteOrder(orderID);
 }

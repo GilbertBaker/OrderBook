@@ -8,7 +8,7 @@
 #include "../Order.h"
 #include <random>
 Trader::Trader(int id) : ID(id) {
-    money= 10000;
+    money= 50000;
     qOwned = 0;
 }
 
@@ -66,8 +66,9 @@ void Trader::limitBuy() {
     std::random_device rd;
     std::mt19937 gen(rd());
 
+    int minPrice = std::max(1, sellPrice-50);
     // Random integer from 1 to 10 inclusive
-    std::uniform_int_distribution<int> dist(sellPrice-50,buyPrice+50);
+    std::uniform_int_distribution<int> dist(minPrice,buyPrice+50);
 
     int l = dist(gen);
 
@@ -92,7 +93,9 @@ void Trader::limitSell() {
     std::mt19937 gen(rd());
 
     // Random integer from 1 to 10 inclusive
-    std::uniform_int_distribution<int> dist(sellPrice-50, buyPrice+50);
+    int minPrice = std::max(1, sellPrice-50);
+
+    std::uniform_int_distribution<int> dist(minPrice, buyPrice+50);
 
     int l = dist(gen);
 
