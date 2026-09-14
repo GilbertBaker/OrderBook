@@ -2,6 +2,7 @@
 // Created by Gilbe on 17/08/2026.
 //
 
+#include <vector>
 #ifndef ORDERBOOK_TRADER_H
 #define ORDERBOOK_TRADER_H
 class TraderAlgo;
@@ -14,11 +15,15 @@ class Trader {
     const int ID;
     int qOwned;
     int money;
+    int reservedQuantity;
+    int reservedMoney;
     TraderAlgo* algo;
     void limitSell();
     void limitBuy();
     void marketSell();
     void marketBuy();
+
+    std::vector<int> currentOrders;
 
 };
 

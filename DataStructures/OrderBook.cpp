@@ -42,7 +42,7 @@ void OrderBook::placeBuyOrder(Order* order) {
 
         q -= fillQuantity;
         matchedOrd->quantity -= fillQuantity;
-
+        seller -> reservedQuantity -= fillQuantity;
         if (matchedOrd->quantity == 0) {
             deleteOrder(matchedOrd->orderID);
         }
@@ -52,6 +52,8 @@ void OrderBook::placeBuyOrder(Order* order) {
     if (q > 0) {
         order->quantity = q;
         orders[order->orderID] = buyOrders->addOrder(order);
+        buyer->currentOrders.push_back(order->orderID);
+        buyer -> reservedMoney += q*order->price;
     }
     else {
         // The entire incoming order was filled, so it isn't stored anywhere
@@ -89,8 +91,10 @@ void OrderBook::placeSellOrder(Order* order) {
         seller->qOwned -= fillQuantity;
         buyer->qOwned += fillQuantity;
 
+
         q -= fillQuantity;
         matchedOrd->quantity -= fillQuantity;
+        buyer -> reservedMoney -= fillQuantity*p;
 
         if (matchedOrd->quantity == 0) {
             deleteOrder(matchedOrd);
@@ -100,7 +104,9 @@ void OrderBook::placeSellOrder(Order* order) {
     // Unfilled portion stays as a limit order
     if (q > 0) {
         order->quantity = q;
+        seller->currentOrders.push_back(order->orderID);
         orders[order->orderID] = sellOrders->addOrder(order);
+        seller -> reservedQuantity += q;
     }
     else {
         delete order;
@@ -135,6 +141,7 @@ void OrderBook::placeBuyInstantOrder(int quantity, int traderID) {
         // Reduce both orders
         q -= fillQuantity;
         matchedOrd->quantity -= fillQuantity;
+        seller -> reservedQuantity -= fillQuantity;
 
         // Remove completely filled order
         if (matchedOrd->quantity == 0) {
@@ -148,6 +155,7 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
     while (q > 0) {
         Order* matchedOrd = buyOrders->getHighestOrder();
 
+        // No buyers left
         if (matchedOrd == nullptr) {
             return;
         }
@@ -170,7 +178,7 @@ void OrderBook::placeSellInstantOrder(int quantity, int traderID) {
         // Reduce both orders
         q -= fillQuantity;
         matchedOrd->quantity -= fillQuantity;
-
+        buyer->reservedMoney -= fillQuantity*p;
         // Remove completely filled order
         if (matchedOrd->quantity == 0) {
             deleteOrder(matchedOrd->orderID);
@@ -192,6 +200,7 @@ bool OrderBook::deleteOrder(int id) {
     if (it == orders.end())
         return false;
 
+    std::erase(algo->getTrader(it->second->order->id)->currentOrders, id);
     delete it->second->order;
     delete it->second;
     orders.erase(it);
@@ -200,13 +209,15 @@ bool OrderBook::deleteOrder(int id) {
 }
 
 int OrderBook::getBestAsk() {
-    if (sellOrders->getLowestOrder()==nullptr) {return -1;}
-    return sellOrders->getLowestOrder()->price;
+    Order* out = sellOrders->getLowestOrder();
+    if (out==nullptr) {return -1;}
+    return out->price;
 
 }
 int OrderBook::getBestBid() {
-    if (buyOrders->getHighestOrder()==nullptr) {return -1;}
-    return buyOrders->getHighestOrder()->price;
+    Order* out = buyOrders->getHighestOrder();
+    if (out==nullptr) {return -1;}
+    return out->price;
 }
 int OrderBook::getMeanPrice() {
     int ask = getBestAsk();
@@ -248,6 +259,18 @@ void OrderBook::outputOrderBook() {
 
 void OrderBook::cancelOrder(int orderID) {
     //delete order returns false if any errors, so this works
+    OrdListNode* ordNode = orders[orderID];
+    Order* order = ordNode->order;
+
+    Trader* trader = algo->getTrader(order->id);
+    if (order->buyOrder) {
+        trader->reservedMoney -= order->price*order->quantity;
+    }
+    else {
+        trader->reservedQuantity -= order->quantity;
+    }
+
+
     if (!deleteOrder(orderID)) {
         std::cout << "\nInvalid cancel ID error\n";
     }

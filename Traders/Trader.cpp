@@ -10,6 +10,8 @@
 Trader::Trader(int id) : ID(id) {
     money= 50000;
     qOwned = 0;
+    reservedMoney= 0;
+    reservedQuantity=0;
 }
 
 //current strategy:
@@ -18,14 +20,10 @@ Trader::Trader(int id) : ID(id) {
 //
 void Trader::Update() {
     //TODO: make this more complicated.
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     // Random integer from 1 to 10 inclusive
-    std::uniform_int_distribution<int> dist(0, 99);
+    std::uniform_int_distribution<int> dist(0, 101);
 
-    int v = dist(gen);
-    //2% ish buy chance
+    int v = dist(algo->rng);
     if (v<=49) {
         if (v<=25) {
             //market buy
@@ -36,25 +34,34 @@ void Trader::Update() {
             limitBuy();
         }
     }
-    //2% ishsell chance
+
     else {
         if (v<=74) {
             //market sell
             marketSell();
         }
-        else {
+        else if (v <=99) {
             //limit sell
             limitSell();
+        }
+        else {
+            //low chance but to stop it freezing: cancel
+            if (currentOrders.size() > 0) {
+                algo->orderBook->cancelOrder(currentOrders[0]);
+            }
         }
     }
 
 }
 
 void Trader::marketBuy() {
-    if (money < 1000*algo->orderBook->getBestAsk()) {
-        return;
-    }
-    algo->orderBook->placeBuyInstantOrder(1000,ID);
+    int bestAsk = algo->orderBook->getBestAsk();
+    int max = (money-reservedMoney)/bestAsk;
+    if (max<=1) {return;}
+    std::uniform_int_distribution<int> dist2(1, max);
+    int q = dist2(algo->rng);
+
+    algo->orderBook->placeBuyInstantOrder(q,ID);
 }
 void Trader::limitBuy() {
     OrderBook* ordBook = algo -> orderBook;
@@ -63,24 +70,23 @@ void Trader::limitBuy() {
     if (buyPrice<=0) {buyPrice=sellPrice+20; if (sellPrice <=0) {buyPrice=1000; sellPrice=1000;}}
     int dif = buyPrice-sellPrice;
 
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
     int minPrice = std::max(1, sellPrice-50);
     // Random integer from 1 to 10 inclusive
     std::uniform_int_distribution<int> dist(minPrice,buyPrice+50);
 
-    int l = dist(gen);
+    int l = dist(algo->rng);
 
     //work out quantity
-    std::uniform_int_distribution<int> dist2(1, 3000);
-    int q = dist2(gen);
+    int maxAmount = (money-reservedMoney)/l;
+    if (maxAmount<=1) {return;}
+    std::uniform_int_distribution<int> dist2(1, maxAmount);
+    int q = dist2(algo->rng);
 
 
     //if no orders default to 1000
     if (buyPrice<=0) {buyPrice=ordBook->getBestBid(); if (buyPrice<=0) {buyPrice=1000;}}
-    if (l*q>money) {return;}
-    Order* order = new Order(l,q,algo->getCurrentTime(),ID,algo->getNextID());
+    if (l*q>money-reservedMoney) {return;}
+    Order* order = new Order(l,q,algo->getCurrentTime(),ID,algo->getNextID(), true);
     ordBook->placeBuyOrder(order);
 }
 void Trader::limitSell() {
@@ -89,37 +95,34 @@ void Trader::limitSell() {
     int buyPrice = ordBook->getBestAsk();
     int sellPrice = ordBook->getBestBid();
     if (buyPrice<=0) {buyPrice=sellPrice+20; if (sellPrice <=0) {buyPrice=1000; sellPrice=1000;}}
-    std::random_device rd;
-    std::mt19937 gen(rd());
 
     // Random integer from 1 to 10 inclusive
     int minPrice = std::max(1, sellPrice-50);
 
     std::uniform_int_distribution<int> dist(minPrice, buyPrice+50);
 
-    int l = dist(gen);
+    int l = dist(algo->rng);
 
     //work out quantity
-    std::uniform_int_distribution<int> dist2(1, qOwned);
-    int q = dist2(gen);
+    int maxQ = qOwned-reservedQuantity;
+    if (maxQ<=1) {return;}
+    std::uniform_int_distribution<int> dist2(1, maxQ);
+    int q = dist2(algo->rng);
 
 
     //if no orders default to 1000
     if (buyPrice<=0) {buyPrice=ordBook->getBestAsk(); if (buyPrice<=0) {buyPrice=1000;}}
-    Order* order = new Order(l,q,algo->getCurrentTime(),ID, algo->getNextID());
+    if (q>qOwned-reservedQuantity) {return;}
+    Order* order = new Order(l,q,algo->getCurrentTime(),ID, algo->getNextID(), false);
     ordBook->placeSellOrder(order);
 
 }
 void Trader::marketSell() {
-    if (qOwned<=0) {return;}
-    std::random_device rd;
-    std::mt19937 gen(rd());
-
-
 
     //work out quantity
-    std::uniform_int_distribution<int> dist2(1, qOwned);
-    int q = dist2(gen);
+    if (qOwned-reservedQuantity<=1) {return;}
+    std::uniform_int_distribution<int> dist2(1, qOwned-reservedQuantity);
+    int q = dist2(algo->rng);
 
     //place
     algo->orderBook->placeSellInstantOrder(q,ID);

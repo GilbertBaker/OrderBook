@@ -8,12 +8,13 @@
 
 class Order {
 public:
-    Order(int p, int q, int t, int traderID, int orderid);
+    Order(int p, int q, int t, int traderID, int orderid, bool buyOrd);
     const int price;
     const int time;
     const int id;
     int quantity;
     int orderID;
+    bool buyOrder; // true for buy, false for sell
 };
 
 

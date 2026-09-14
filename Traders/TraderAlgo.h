@@ -4,6 +4,7 @@
 
 #ifndef ORDERBOOK_TRADERALGO_H
 #define ORDERBOOK_TRADERALGO_H
+#include <random>
 #include <unordered_map>
 
 //#include "Trader.h"
@@ -20,6 +21,8 @@ class TraderAlgo {
     OrderBook* orderBook;
     int getCurrentTime();
     int getNextID();
+    std::mt19937 rng;
+
     private:
     int curID;
     int currentTradeID;
